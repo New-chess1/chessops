@@ -25,6 +25,7 @@ export class Board implements Iterable<[Square, Piece]>, ByRole<SquareSet>, ByCo
 
   pawn: SquareSet;
   knight: SquareSet;
+  duke: SquareSet;
   bishop: SquareSet;
   rook: SquareSet;
   queen: SquareSet;

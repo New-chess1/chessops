@@ -81,6 +81,78 @@ export class Crazyhouse extends Chess {
   }
 }
 
+export class NewChess1 extends Chess {
+  protected constructor() {
+    super('newchess1');
+  }
+
+  static default(): NewChess1 {
+    const pos = super.default();
+    pos.pockets = Material.empty();
+    return pos as NewChess1;
+  }
+
+  static fromSetup(setup: Setup, opts?: FromSetupOpts): Result<NewChess1, PositionError> {
+    return super.fromSetup(setup, opts).map(pos => {
+      pos.pockets = setup.pockets ? setup.pockets.clone() : Material.empty();
+      return pos as NewChess1;
+    });
+  }
+
+  protected validate(opts?: FromSetupOpts): Result<undefined, PositionError> {
+    return super.validate(opts).chain(_ => {
+      if (this.pockets && (this.pockets.white.king > 0 || this.pockets.black.king > 0)) {
+        return Result.err(new PositionError(IllegalSetup.Kings));
+      }
+      if ((this.pockets ? this.pockets.count() : 0) + this.board.occupied.size() > 64) {
+        return Result.err(new PositionError(IllegalSetup.Variant));
+      }
+      return Result.ok(undefined);
+    });
+  }
+
+  clone(): NewChess1 {
+    return super.clone() as NewChess1;
+  }
+
+  hasInsufficientMaterial(color: Color): boolean {
+    // No material can leave the game, but we can easily check this for
+    // custom positions.
+    if (!this.pockets) return super.hasInsufficientMaterial(color);
+    return (
+      this.board.occupied.size() + this.pockets.count() <= 3 &&
+      this.board.pawn.isEmpty() &&
+      this.board.promoted.isEmpty() &&
+      this.board.rooksAndQueens().isEmpty() &&
+      this.pockets.white.pawn <= 0 &&
+      this.pockets.black.pawn <= 0 &&
+      this.pockets.white.rook <= 0 &&
+      this.pockets.black.rook <= 0 &&
+      this.pockets.white.queen <= 0 &&
+      this.pockets.black.queen <= 0 &&
+      this.pockets.white.duke <= 0 &&
+      this.pockets.black.duke <= 0
+    );
+  }
+
+  dropDests(ctx?: Context): SquareSet {
+    const mask = this.board.occupied
+      .complement()
+      .intersect(
+        this.pockets?.[this.turn].hasDoom()
+          ? SquareSet.doomStartPoints(this.turn).complement()
+          : SquareSet.empty()
+      );
+
+    ctx = ctx || this.ctx();
+    if (defined(ctx.king) && ctx.checkers.nonEmpty()) {
+      const checker = ctx.checkers.singleSquare();
+      if (!defined(checker)) return SquareSet.empty();
+      return mask.intersect(between(checker, ctx.king));
+    } else return mask;
+  }
+}
+
 export class Atomic extends Chess {
   protected constructor() {
     super('atomic');
@@ -160,8 +232,8 @@ export class Atomic extends Chess {
       return false;
     }
 
-    // Queen or pawn (future queen) can give mate against bare king.
-    if (this.board.queen.nonEmpty() || this.board.pawn.nonEmpty()) return false;
+    // Queen or pawn (future queen) or duke can give mate against bare king.
+    if (this.board.queen.nonEmpty() || this.board.pawn.nonEmpty() || this.board.duke.nonEmpty()) return false;
 
     // Single knight, bishop or rook cannot mate against bare king.
     if (this.board.knight.union(this.board.bishop).union(this.board.rook).isSingleSquare()) return true;
@@ -515,6 +587,8 @@ export function defaultPosition(rules: Rules): Position {
       return ThreeCheck.default();
     case 'crazyhouse':
       return Crazyhouse.default();
+    case 'newchess1':
+      return NewChess1.default();
   }
 }
 
@@ -536,5 +610,7 @@ export function setupPosition(rules: Rules, setup: Setup, opts?: FromSetupOpts):
       return ThreeCheck.fromSetup(setup, opts);
     case 'crazyhouse':
       return Crazyhouse.fromSetup(setup, opts);
+    case 'newchess1':
+      return NewChess1.fromSetup(setup, opts);
   }
 }

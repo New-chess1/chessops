@@ -23,6 +23,7 @@ import {
   rookAttacks,
   queenAttacks,
   knightAttacks,
+  doomAttacks,
   kingAttacks,
   pawnAttacks,
   between,
@@ -51,6 +52,7 @@ function attacksTo(square: Square, attacker: Color, board: Board, occupied: Squa
       .intersect(board.rooksAndQueens())
       .union(bishopAttacks(square, occupied).intersect(board.bishopsAndQueens()))
       .union(knightAttacks(square).intersect(board.knight))
+      .union(doomAttacks(square).intersect(board.duke))
       .union(kingAttacks(square).intersect(board.king))
       .union(pawnAttacks(opposite(attacker), square).intersect(board.pawn))
   );
@@ -593,6 +595,7 @@ export class Chess extends Position {
       }
     } else if (piece.role === 'bishop') pseudo = bishopAttacks(square, this.board.occupied);
     else if (piece.role === 'knight') pseudo = knightAttacks(square);
+    else if (piece.role === 'duke') pseudo = doomAttacks(square);
     else if (piece.role === 'rook') pseudo = rookAttacks(square, this.board.occupied);
     else if (piece.role === 'queen') pseudo = queenAttacks(square, this.board.occupied);
     else pseudo = kingAttacks(square);
@@ -630,11 +633,11 @@ export class Chess extends Position {
   }
 
   hasInsufficientMaterial(color: Color): boolean {
-    if (this.board[color].intersect(this.board.pawn.union(this.board.rooksAndQueens())).nonEmpty()) return false;
+    if (this.board[color].intersect(this.board.pawn.union(this.board.rooksAndQueens()).union(this.board.duke)).nonEmpty()) return false;
     if (this.board[color].intersects(this.board.knight)) {
       return (
         this.board[color].size() <= 2 &&
-        this.board[opposite(color)].diff(this.board.king).diff(this.board.queen).isEmpty()
+        this.board[opposite(color)].diff(this.board.king).diff(this.board.queen).diff(this.board.duke).isEmpty()
       );
     }
     if (this.board[color].intersects(this.board.bishop)) {

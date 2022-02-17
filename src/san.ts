@@ -2,7 +2,7 @@ import { FILE_NAMES, RANK_NAMES, isDrop, Move, CastlingSide } from './types.js';
 import { charToRole, defined, roleToChar, parseSquare, makeSquare, squareFile, squareRank, opposite } from './util.js';
 import { SquareSet } from './squareSet.js';
 import { Position } from './chess.js';
-import { attacks, kingAttacks, queenAttacks, rookAttacks, bishopAttacks, knightAttacks } from './attacks.js';
+import { attacks, kingAttacks, queenAttacks, rookAttacks, bishopAttacks, knightAttacks, doomAttacks } from './attacks.js';
 
 function makeSanWithoutSuffix(pos: Position, move: Move): string {
   let san = '';
@@ -26,6 +26,7 @@ function makeSanWithoutSuffix(pos: Position, move: Move): string {
         else if (role === 'queen') others = queenAttacks(move.to, pos.board.occupied).intersect(pos.board.queen);
         else if (role === 'rook') others = rookAttacks(move.to, pos.board.occupied).intersect(pos.board.rook);
         else if (role === 'bishop') others = bishopAttacks(move.to, pos.board.occupied).intersect(pos.board.bishop);
+        else if (role === 'duke') others = doomAttacks(move.to).intersect(pos.board.duke);
         else others = knightAttacks(move.to).intersect(pos.board.knight);
         others = others.intersect(pos.board[pos.turn]).without(move.from);
         if (others.nonEmpty()) {

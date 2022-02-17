@@ -34,13 +34,13 @@ export function scalachessCharPair(move: Move): string {
   if (isDrop(move))
     return String.fromCharCode(
       35 + move.to,
-      35 + 64 + 8 * 5 + ['queen', 'rook', 'bishop', 'knight', 'pawn'].indexOf(move.role)
+      35 + 64 + 8 * 5 + ['queen', 'rook', 'bishop', 'knight', 'pawn', 'duke'].indexOf(move.role)
     );
   else
     return String.fromCharCode(
       35 + move.from,
       move.promotion
-        ? 35 + 64 + 8 * ['queen', 'rook', 'bishop', 'knight', 'king'].indexOf(move.promotion) + squareFile(move.to)
+        ? 35 + 64 + 8 * ['queen', 'rook', 'bishop', 'knight', 'king', 'duke'].indexOf(move.promotion) + squareFile(move.to)
         : 35 + move.to
     );
 }
@@ -57,6 +57,7 @@ export function lichessRules(
     | 'horde'
     | 'racingKings'
     | 'crazyhouse'
+    | 'newchess1'
 ): Rules {
   switch (variant) {
     case 'standard':
@@ -76,7 +77,7 @@ export function lichessRules(
 
 export function lichessVariant(
   rules: Rules
-): 'standard' | 'antichess' | 'kingOfTheHill' | 'threeCheck' | 'atomic' | 'horde' | 'racingKings' | 'crazyhouse' {
+): 'standard' | 'antichess' | 'kingOfTheHill' | 'threeCheck' | 'atomic' | 'horde' | 'racingKings' | 'crazyhouse' | 'newchess1' {
   switch (rules) {
     case 'chess':
       return 'standard';

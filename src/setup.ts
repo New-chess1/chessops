@@ -5,6 +5,7 @@ import { Board } from './board.js';
 export class MaterialSide {
   pawn: number;
   knight: number;
+  duke: number;
   bishop: number;
   rook: number;
   queen: number;
@@ -52,12 +53,16 @@ export class MaterialSide {
     return this.pawn > 0;
   }
 
+  hasDoom(): boolean {
+    return this.duke > 0;
+  }
+
   hasNonPawns(): boolean {
-    return this.knight > 0 || this.bishop > 0 || this.rook > 0 || this.queen > 0 || this.king > 0;
+    return this.knight > 0 || this.bishop > 0 || this.rook > 0 || this.queen > 0 || this.king > 0 || this.duke > 0;
   }
 
   count(): number {
-    return this.pawn + this.knight + this.bishop + this.rook + this.queen + this.king;
+    return this.pawn + this.knight + this.duke + this.bishop + this.rook + this.queen + this.king;
   }
 }
 

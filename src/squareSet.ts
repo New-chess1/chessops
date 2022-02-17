@@ -60,6 +60,10 @@ export class SquareSet implements Iterable<Square> {
     return color === 'white' ? new SquareSet(0xff, 0) : new SquareSet(0, 0xff00_0000);
   }
 
+  static doomStartPoints(color: Color): SquareSet {
+    return color === 'white' ? SquareSet.empty().with(3).with(4): SquareSet.empty().with(59).with(60);
+  }
+
   static lightSquares(): SquareSet {
     return new SquareSet(0x55aa_55aa, 0x55aa_55aa);
   }

@@ -48,6 +48,7 @@ export {
   bishopAttacks,
   kingAttacks,
   knightAttacks,
+  doomAttacks,
   pawnAttacks,
   queenAttacks,
   ray,

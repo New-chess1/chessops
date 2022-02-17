@@ -35,6 +35,7 @@ function tabulate<T>(f: (square: Square) => T): BySquare<T> {
 
 const KING_ATTACKS = tabulate(sq => computeRange(sq, [-9, -8, -7, -1, 1, 7, 8, 9]));
 const KNIGHT_ATTACKS = tabulate(sq => computeRange(sq, [-17, -15, -10, -6, 6, 10, 15, 17]));
+const DOOM_ATTACKS = tabulate(sq => computeRange(sq, [-18, -16, -14, -9, -8, -7, -2, -1, 1, 2, 7, 8, 9, 14, 16, 18]));
 const PAWN_ATTACKS = {
   white: tabulate(sq => computeRange(sq, [7, 9])),
   black: tabulate(sq => computeRange(sq, [-7, -9])),
@@ -52,6 +53,13 @@ export function kingAttacks(square: Square): SquareSet {
  */
 export function knightAttacks(square: Square): SquareSet {
   return KNIGHT_ATTACKS[square];
+}
+
+/**
+ * Gets squares attacked or defended by a duke on `square`.
+ */
+export function doomAttacks(square: Square): SquareSet {
+  return DOOM_ATTACKS[square];
 }
 
 /**
@@ -133,6 +141,8 @@ export function attacks(piece: Piece, square: Square, occupied: SquareSet): Squa
       return pawnAttacks(piece.color, square);
     case 'knight':
       return knightAttacks(square);
+    case 'duke':
+      return doomAttacks(square);
     case 'bishop':
       return bishopAttacks(square, occupied);
     case 'rook':
