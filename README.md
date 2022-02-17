@@ -42,6 +42,14 @@ const pos = Chess.fromSetup(setup).unwrap();
 console.assert(pos.isCheckmate());
 ```
 
+
+## Build/publish
+
+```
+yarn run compile
+npm publish
+```
+
 ## License
 
 chessops is licensed under the GNU General Public License 3 or any later
